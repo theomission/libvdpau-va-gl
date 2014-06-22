@@ -210,9 +210,14 @@ h264_translate_reference_frames(VdpVideoSurfaceData *dstSurfData, VdpDecoder dec
         }
 
         VdpReferenceFrameH264 const *vdp_ref = &(vdppi->referenceFrames[k]);
-        VdpVideoSurfaceData *vdpSurfData =
-            handle_acquire(vdp_ref->surface, HANDLETYPE_VIDEO_SURFACE);
         VAPictureH264 *va_ref = &(pic_param->ReferenceFrames[k]);
+        VdpVideoSurfaceData *vdpSurfData;
+
+        if (vdp_ref->surface == dstSurfData->handle_id)
+            vdpSurfData = dstSurfData;
+        else
+            vdpSurfData = handle_acquire(vdp_ref->surface, HANDLETYPE_VIDEO_SURFACE);
+
         if (NULL == vdpSurfData) {
             traceError("error (%s): NULL == vdpSurfData\n", __func__);
             return VDP_STATUS_ERROR;
@@ -244,7 +249,9 @@ h264_translate_reference_frames(VdpVideoSurfaceData *dstSurfData, VdpDecoder dec
 
         va_ref->TopFieldOrderCnt    = vdp_ref->field_order_cnt[0];
         va_ref->BottomFieldOrderCnt = vdp_ref->field_order_cnt[1];
-        handle_release(vdp_ref->surface);
+
+        if (vdp_ref->surface != dstSurfData->handle_id)
+            handle_release(vdp_ref->surface);
     }
 
     return VDP_STATUS_OK;

@@ -44,6 +44,7 @@ handle_insert(void *data)
 
     id = next_handle_id ++;
     g_hash_table_insert(vdp_handles, GINT_TO_POINTER(id), data);
+    ((VdpGenericData *)data)->handle_id = id;
 
     pthread_mutex_unlock(&lock);
     return id;

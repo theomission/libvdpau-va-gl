@@ -27,6 +27,7 @@
         VdpDevice       device;                     \
         VdpDeviceData  *deviceData;                 \
         pthread_mutex_t lock;                       \
+        uint32_t        handle_id;                  \
     }
 
 typedef struct VdpDeviceData VdpDeviceData;
